@@ -1,0 +1,12 @@
+cs50
+opencv-python
+datetime
+dateparser
+Flask
+Flask-Dropzone
+Flask-Session
+googletrans
+requests
+pytesseract
+Pillow
+Werkzeug

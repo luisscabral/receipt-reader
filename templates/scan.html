@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Scan
+{% endblock %}
+
+{% block main %}
+    <form action="/scan" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="name" placeholder="Name receipt" type="text"> <br>
+        </div>
+        <div class="form-group">
+            <select name="category">
+                {% for category in categories %}
+                <option value = "{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <select name="language">
+                {% for language in languages %}
+                <option value = "{{ language }}">{{ language }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <!-- {{ dropzone.create(action='scan') }} -->
+        <div class="fallback">
+            <label for="img">Select image:</label>
+            <input type='file' id="img" name="receipt-image" accept="image/*,.pdf" onchange="runFunctions(this);"/>
+        </div>
+        <img id="blah" src="http://via.placeholder.com/180?text=your+receipt" name="image" alt="your receipt" /> <br> <br>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+    <!-- {{ dropzone.load_js() }}
+    {{ dropzone.config(name="receipt-image") }} -->
+{% endblock %}
+

@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Results
+{% endblock %}
+
+{% block main %}
+<img src="{{ image }}" alt="Uploaded receipt"> <br> <br> <br>
+<table class="table table-striped table-hover" width="100%">
+    <tbody>
+            <tr>
+                <td>Header</td>
+                <td>{{ header }}</td>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>{{ name }}</td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td>{{ total }}</td>
+            </tr>
+            <tr>
+                <td>Date created</td>
+                <td>{{ date_now }}</td>
+            </tr>
+            <tr>
+                <td>Date purchase</td>
+                <td>{{ datetime }}</td>
+            </tr>
+            <tr>
+                <td>Category</td>
+                <td>{{ category }}</td>
+            </tr>
+            <tr>
+                <td>Language</td>
+                <td>{{ language }}</td>
+            </tr>
+    </tbody>
+</table>
+<!-- <p>
+    Header: {{ header }} <br>
+    Name: {{ name }} <br>
+</p>
+<p>
+    Date created: {{ date_now }} <br>
+    Date purchase: {{ datetime }} <br>
+    Category: {{ category }} <br>
+    Language: {{ language }} <br>
+</p>
+<p>
+    Total: {{ total }}
+</p> -->
+<form action="/results" method="POST">
+<div class="form-group">
+    <button class="btn btn-light" type="submit" name="action" value="edit" id="edit">Edit</button>
+    <button class="btn btn-success" type="submit" name="action" value="submit" id="submit">Submit</button>
+</div>
+</form>
+{% endblock %}  
