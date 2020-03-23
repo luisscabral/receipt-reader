@@ -1,2 +1,5 @@
-sudo apt install tesseract-ocr
-sudo apt install libtesseract-dev
+cd tesseract
+./autogen.sh
+./configure --prefix=home/luisscabral/
+make
+make install
