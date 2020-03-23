@@ -17,7 +17,7 @@ from googletrans import Translator
 import datetime
 from datetime import date
 from dateutil.parser import parse
-import cv2
+# import cv2
 import re
 
 from helpers import apology, login_required, lookup, usd, eur
