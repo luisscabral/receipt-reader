@@ -52,5 +52,7 @@
         </tfoot>
     </tbody>
 </table>
-<button class="btn btn-success" type="submit" name="action" value="export" id="export">Export to Google Spreadsheet</button>
+<form action="/download" method="POST">
+    <button class="btn btn-success" type="submit" name="download" value="download">Download as Excel file</button>
+</form>
 {% endblock %}

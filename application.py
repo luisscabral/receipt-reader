@@ -2,6 +2,8 @@ import os
 
 from cs50 import SQL
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, send_from_directory, url_for
+import flask_excel as excel
+
 from flask_session import Session
 from flask_dropzone import Dropzone
 from flask_debugtoolbar import DebugToolbarExtension
@@ -29,6 +31,8 @@ ALLOWED_EXTENSIONS = set(['bmp', 'pdf', 'png', 'jpg', 'jpeg'])
 app = Flask(__name__)
 dropzone = Dropzone(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+excel.init_excel(app)
 
 # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
@@ -127,13 +131,30 @@ def index():
             return render_template("index_empty.html")
         else:
             for receipt in receipts:
-                total =+ receipt["total"]
+                total = total + receipt["total"]
             return render_template("index.html", receipts = receipts, total = total)
 
 @app.route("/about")
 def about():
     """Describe the project"""
     return render_template("about.html")
+
+@app.route("/download", methods=["GET", "POST"])
+@login_required
+def download():
+    """Download excel file"""
+    if request.method == "POST":
+        if request.form.get("download"):
+            receipts = db.execute("SELECT id, name, header, total, date, date_created, category, language, image_link FROM 'receipts' WHERE user_id = :user_id AND deleted = 0", user_id=session["user_id"])
+            print(receipts)
+            print(type(receipts))
+            return excel.make_response_from_records(receipts, 'xlsx', file_name="receipts")
+        else:
+            print(request.form)
+            return redirect("/")
+    else:
+        return redirect("/")
+
 
 @app.route("/edit", methods=["GET", "POST"])
 @login_required
@@ -421,3 +442,7 @@ def errorhandler(e):
 # Listen for errors
 for code in default_exceptions:
     app.errorhandler(code)(errorhandler)
+
+if __name__ == "__main__":
+    excel.init_excel(app)
+    app.run()
