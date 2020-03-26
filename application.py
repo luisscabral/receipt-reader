@@ -17,7 +17,7 @@ from googletrans import Translator
 import datetime
 from datetime import date
 from dateutil.parser import parse
-# import cv2
+import cv2
 import re
 
 from helpers import apology, login_required, lookup, usd, eur
@@ -111,15 +111,24 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
-    """Show existing receipts"""
-    receipts = db.execute("SELECT name, header, total, date, date_created, category, language, image_link FROM 'receipts' WHERE user_id = :user_id AND deleted = 0", user_id=session["user_id"])
-    if receipts == []:
-        return render_template("index_empty.html")
+    if request.method == "POST":
+        if request.form.get("action") == "export":
+            return apology("TO DO", 400)
+        else:
+            return apology("TO DO", 400)
     else:
-        return render_template("index.html", receipts = receipts)
+        """Show existing receipts"""
+        total = 0
+        receipts = db.execute("SELECT id, name, header, total, date, date_created, category, language, image_link FROM 'receipts' WHERE user_id = :user_id AND deleted = 0", user_id=session["user_id"])
+        if receipts == []:
+            return render_template("index_empty.html")
+        else:
+            for receipt in receipts:
+                total =+ receipt["total"]
+            return render_template("index.html", receipts = receipts, total = total)
 
 @app.route("/about")
 def about():
@@ -130,17 +139,30 @@ def about():
 @login_required
 def edit(image, header, name, total, datetime, category, language):
     if request.method == "POST":
-        # Needs to get data from editable table 
-        return render_template("edit.html", image = UPLOAD_FOLDER + filename, header = header, name = name, total = total, date_now = date.today().strftime("%Y-%m-%d"), datetime = datetime, category = category, language = language)
+        if request.form.get("action") == "submit-edited":
+            edit_image = image
+            edit_header = request.form.get("header")
+            edit_name = request.form.get("name")
+            edit_total = request.form.get("total")
+            edit_datetime = request.form.get("datetime")
+            edit_category = request.form.get("category")
+            edit_language = request.form.get("language")
+            db.execute("INSERT INTO 'receipts' (user_id, header, name, total, date, date_created, category, language, image_link) VALUES (:user_id, :header, :name, :total, :date, :date_created, :category, :language, :image_link)", user_id = session["user_id"], header = edit_header, name = edit_name, total = float(edit_total), date = edit_datetime, date_created = date.today().strftime("%Y-%m-%d"), category = edit_category, language = edit_language, image_link = edit_image)
+            db.execute("UPDATE users SET receipts = receipts + 1 WHERE id = :user_id", user_id = session["user_id"])
+            flash("Saved!")
+            return redirect("/")
+        else:
+            return render_template("edit.html", image = UPLOAD_FOLDER + filename, header = header, name = name, total = total, date_now = date.today().strftime("%Y-%m-%d"), datetime = datetime, category = category, language = language, categories = categories, languages = languages)
     else:
-        # date_now = date.today()
-        return render_template("edit.html", image = UPLOAD_FOLDER + filename, header = header, name = name, total = total, date_now = date.today().strftime("%Y-%m-%d"), datetime = datetime, category = category, language = language)
+        #NOT REACHING HERE
+        return render_template("edit.html", image = UPLOAD_FOLDER + filename, header = header, name = name, total = total, date_now = date.today().strftime("%Y-%m-%d"), datetime = datetime, category = category, language = language, categories = categories, languages = languages)
+
 
 @app.route("/history")
 @login_required
 def history():
     """Show history of scans"""
-    receipts = db.execute("SELECT name, header, total, date, date_created, category, language, image_link FROM 'receipts' WHERE user_id = :user_id", user_id=session["user_id"])
+    receipts = db.execute("SELECT id, name, header, total, date, date_created, category, language, image_link, deleted FROM 'receipts' WHERE user_id = :user_id", user_id=session["user_id"])
     if receipts == []:
         return render_template("history_empty.html")
     else:
@@ -221,18 +243,58 @@ def register():
     else:
         return render_template("register.html")
 
+@app.route("/remove", methods=["GET", "POST"])
+@login_required
+def remove():
+    if request.method == "POST":
+        if request.form.get("remove"):
+            receipt_id = request.form.get("remove")
+            db.execute("UPDATE receipts SET deleted = 1 WHERE id = :receipt_id", receipt_id = receipt_id)
+            flash("Removed!")
+            return redirect("/")
+        else:
+            return redirect("/")
+    else:
+        #NOT REACHING HERE
+        return redirect("/")
+
+
+@app.route("/restore", methods=["GET", "POST"])
+@login_required
+def restore():
+    if request.method == "POST":
+        if request.form.get("restore"):
+            receipt_id = request.form.get("restore")
+            db.execute("UPDATE receipts SET deleted = 0 WHERE id = :receipt_id", receipt_id = receipt_id)
+            flash("Restored!")
+            return history()
+        else:
+            print(request.form)
+            return history()
+    else:
+        #NOT REACHING HERE
+        return redirect("/")
+
+
 @app.route("/results", methods=["GET", "POST"])
 @login_required
 def results():
     if request.method == "POST":
         if request.form.get("action") == "edit":
             return edit(image = UPLOAD_FOLDER + filename, header = header, name = name, total = total, datetime = datetime, category = category, language = language)
+        elif request.form.get("action") == "submit-edited":
+            edit_header = request.form.get("header")
+            edit_name = request.form.get("name")
+            edit_total = request.form.get("total")
+            edit_datetime = request.form.get("datetime")
+            edit_category = request.form.get("category")
+            edit_language = request.form.get("language")
+            db.execute("INSERT INTO 'receipts' (user_id, header, name, total, date, date_created, category, language, image_link) VALUES (:user_id, :header, :name, :total, :date, :date_created, :category, :language, :image_link)", user_id = session["user_id"], header = edit_header, name = edit_name, total = float(edit_total), date = edit_datetime, date_created = date.today().strftime("%Y-%m-%d"), category = edit_category, language = edit_language, image_link = UPLOAD_FOLDER + image.filename)
+            db.execute("UPDATE users SET receipts = receipts + 1 WHERE id = :user_id", user_id = session["user_id"])
+            flash("Saved!")
+            return redirect("/")
         else:
-            try:
-                new_total = re.findall(r"[-+]?\d*\.\d+|\d+", total)[0]
-            except(TypeError):
-                new_total = float(0.00)
-            db.execute("INSERT INTO 'receipts' (user_id, header, name, total, date, date_created, category, language, image_link) VALUES (:user_id, :header, :name, :total, :date, :date_created, :category, :language, :image_link)", user_id = session["user_id"], header = header, name = name, total = float(new_total), date = datetime, date_created = date.today().strftime("%Y-%m-%d"), category = category, language = language, image_link = UPLOAD_FOLDER + filename)
+            db.execute("INSERT INTO 'receipts' (user_id, header, name, total, date, date_created, category, language, image_link) VALUES (:user_id, :header, :name, :total, :date, :date_created, :category, :language, :image_link)", user_id = session["user_id"], header = header, name = name, total = float(total), date = datetime, date_created = date.today().strftime("%Y-%m-%d"), category = category, language = language, image_link = UPLOAD_FOLDER + filename)
             db.execute("UPDATE users SET receipts = receipts + 1 WHERE id = :user_id", user_id = session["user_id"])
             flash("Saved!")
             return redirect("/")
@@ -302,12 +364,16 @@ def scan():
                         total = None
                     continue
                 try:
+                    total = re.findall(r"[-+]?\d*\.\d+|\d+", total)[0]
+                except(TypeError):
+                    total = float(0.00)
+                try:
                     d = parse(lookfor, ignoretz=True)
                     if d is not None:
                         r = re.compile('.*-.*-.*')
                         reg = re.compile('.*/.*/.*')
                         if r.match(lookfor) or reg.match(lookfor):
-                            datetime = d
+                            datetime = d.strftime("%Y-%m-%d")
                         # datetime = datetime.date
                         #     print('matches')
                         # print("String: {} | Datetime: {}".format(lookfor, d))
@@ -342,8 +408,7 @@ def scan():
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 def errorhandler(e):

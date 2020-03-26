@@ -1,8 +1,22 @@
-var receiptRequest = new XMLHttpRequest();
-receiptRequest.open('GET', 'templates/edit.hmtl');
+// var receiptRequest = new XMLHttpRequest();
+// receiptRequest.open('GET', 'templates/edit.hmtl');
 
 // function submit()
 
+// $(function() {
+//     $('#submit').bind('click', function() {
+//         $.getJSON($SCRIPT_ROOT + '/edit', {
+//             header = $('td[name="header"]').val(),
+//             name = $('td[name="name"]').val(),
+//             total = $('td[name="total"]').val(),
+//             date_now = $('td[name="date_now"]').val(),
+//             datetime = $('td[name="datetime"]').val(),
+//             category = $('td[name="category"]').val(),
+//             language = $('td[name="language"]').val()
+//         });
+//         return false;
+//     });
+// });
 
 
 // var receipt = {

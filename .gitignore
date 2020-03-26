@@ -2,3 +2,4 @@ __pycache__
 .elasticbeanstalk
 venv/
 .vscode/
+ec2_access.txt

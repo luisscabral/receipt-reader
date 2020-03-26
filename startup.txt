@@ -1,5 +1,0 @@
-cd tesseract
-./autogen.sh
-./configure --prefix=home/luisscabral/
-make
-make install

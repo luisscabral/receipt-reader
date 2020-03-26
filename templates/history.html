@@ -10,12 +10,13 @@
         <tr>
             <th>Name</th>
             <th>Head</th>
-            <th>Total</th>
             <th>Date</th>
             <th>Date created</th>
             <th>Category</th>
             <th>Language</th>
             <th>Image link</th>
+            <th>Total</th>
+            <th >Restore</th>
         </tr>
     </thead>
     <tbody>
@@ -23,12 +24,23 @@
             <tr>
                 <td>{{ receipt["name"] }}</td>
                 <td>{{ receipt["head"] }}</td>
-                <td>{{ receipt["total"] }}</td>
                 <td>{{ receipt["date"] }}</td>
                 <td>{{ receipt["date_created"] }}</td>
                 <td>{{ receipt["category"] }}</td>
                 <td>{{ receipt["language"] }}</td>
-                <td>{{ receipt["image_link"] }}</td>
+                <td>
+                    <a href="{{ url_for('uploaded_file', filename = receipt['image_link'][8:]) }}" target="_blank">{{ receipt["image_link"] }}</a>
+                </td>
+                <td>{{ receipt["total"] }}</td>
+                {% if receipt["deleted"] == 1 %}
+                    <td>
+                        <form action="/restore" method="post">
+                            <button name="restore" class="btn btn-default" value="{{ receipt['id'] }}" type="submit"><span class="glyphicon glyphicon-plus"></button>
+                        </form>
+                    </td>
+                {% else %}
+                    <td>-</td>
+                {% endif %}
             </tr>
         {% endfor %}
     </tbody>

@@ -10,27 +10,47 @@
         <tr>
             <th>Name</th>
             <th>Head</th>
-            <th>Total</th>
             <th>Date</th>
             <th>Date created</th>
             <th>Category</th>
             <th>Language</th>
             <th>Image link</th>
+            <!-- <th>Select</th> -->
+            <th>Total</th>
+            <th>Remove</th>
         </tr>
     </thead>
     <tbody>
         {% for receipt in receipts %}
             <tr>
                 <td>{{ receipt["name"] }}</td>
-                <td>{{ receipt["head"] }}</td>
-                <td>{{ receipt["total"] }}</td>
+                <td>{{ receipt["header"] }}</td>
                 <td>{{ receipt["date"] }}</td>
                 <td>{{ receipt["date_created"] }}</td>
                 <td>{{ receipt["category"] }}</td>
                 <td>{{ receipt["language"] }}</td>
-                <td>{{ receipt["image_link"] }}</td>
+                <td>
+                    <a href="{{ url_for('uploaded_file', filename = receipt['image_link'][8:]) }}" target="_blank">{{ receipt["image_link"] }}</a>
+                </td>
+                <td>{{ receipt["total"] }}</td>
+                <!-- <td>
+                    <input type="checkbox" />
+                </td> -->
+                <td>
+                    <form action="/remove" method="post">
+                        <button name="remove" class="btn btn-default" value="{{ receipt['id'] }}" type="submit"><span class="glyphicon glyphicon-remove"></button>
+                    </form>
+                    <!-- <input type="submit" name="action" value="remove-{{ receipt['id'] }}" class="btn btn-light"><span class="glyphicon glyphicon-remove"></span></button> -->
+                </td>
             </tr>
         {% endfor %}
+        <tfoot>
+            <td style="font-weight: bold;">Total</td>
+            <td colspan="6"></td>
+            <td>{{ total }}</td>
+            <td></td>
+        </tfoot>
     </tbody>
 </table>
+<button class="btn btn-success" type="submit" name="action" value="export" id="export">Export to Google Spreadsheet</button>
 {% endblock %}

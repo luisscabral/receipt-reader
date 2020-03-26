@@ -62,3 +62,7 @@ table-editable{
 #edit-table:hover > *[contenteditable="true"] {
     background-color: rgba(179, 207, 221, 0.13);
 }
+
+.btn-default{
+    background-color: transparent;
+}
