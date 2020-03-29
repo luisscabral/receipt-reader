@@ -6,11 +6,35 @@
 
 {% block main %}
 <p>
-    Receipt reader is a tool to scan your receipts and find important information, such as the total amount, issuer and time of the purchase.
-    The relevant data from the receipt is stored in a database, together with an image of the receipt. With receipt reader you can export that data to a pre-formated spreadsheet file.<br>
-    <h5>How-to</h5>
-    Documentation in development.
-    <br>
-    Developed by Luís Cabral for the final project of CS50 2020.
+    Receipt reader is a tool to scan your receipts and find important information, such as the total amount, issuer and time of the purchase. The receipt reader can be used for situtations in which you need to keep track of expenditure. Exmaple use cases are a business trip in which you need to get a retroactive refund from the company, or a shared house where costs are split and you need to record purchases. <br>
+    The relevant data from the receipt is stored in a database, together with an image of the receipt. With receipt reader you can export that data to a pre-formated spreadsheet file with direct links to the images online.<br>
+</p> <br>
+<h4>How-to</h4>
+<h5>Scan receipts</h5>
+To scan your first receipt simply follow these steps:
+<ol>
+    <li>Click the "Scan" tab.</li>
+    <li>Fill in name (e.g. "Flight tickets"), category and language of the receipt. Upload the receipt image.</li>
+    <li>Press "Submit". Receipt-reader will try to identify the main elements of the receipt and show them back to you in a table format. This step might take several seconds, depending on the image file size.</li>
+    <li>If the resulting table is incorrect or incomplete, start editing the values by pressing "Edit". If you are satisfied with the results, simply press "Submit"</li>
+</ol>
+<h5>Edit a receipt</h5>
+If you are not satisfied with the results of a receipt scan you can edit them:
+<ol>
+    <li>To start the editing process, simply press "Edit" at the final step of a scan.</li>
+    <li>Modify any wrong or incomplete entries.</li>
+    <li>Press "Submit.</li>
+</ol>
+<h5>Export collection of receipts</h5>
+To export a collection of receipts:
+<ol>
+    <li>In the home (index) page select the list of receipts you want. To remove a receipt, press the "X" on the "Remove" column of the table</li>
+    <li>If there is a receipt you previously removed but want to see on the list, navigate to "History" and press the "Restore" button ("+") of that receipt.</li>
+    <li>Once you have the final list of receipts you are interested in, simply press the export button.</li>
+</ol>
+<br>
+<p>
+    Developed by Luís Cabral for the final project of CS50 2020. <br>
+    If you experience any difficulty while using this website, please resport an issue at this page's <a href="https://github.com/luisscabral/receipt-reader">Github page</a>.
 </p>
 {% endblock %}  

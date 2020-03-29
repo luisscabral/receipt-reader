@@ -7,6 +7,7 @@ import flask_excel as excel
 from flask_session import Session
 from flask_dropzone import Dropzone
 from flask_debugtoolbar import DebugToolbarExtension
+# from flask_sqlalchemy import SQLAlchemy
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -21,6 +22,8 @@ from datetime import date
 from dateutil.parser import parse
 import cv2
 import re
+from sqlalchemy.orm import scoped_session, sessionmaker
+
 
 from helpers import apology, login_required, lookup, usd, eur
 
@@ -71,7 +74,40 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///receipt.db")
+package_dir = os.path.abspath(os.path.dirname(__file__))
+db_dir = os.path.join(package_dir, 'receipt.db')
+db = SQL("sqlite:///" + db_dir)
+Session = scoped_session(sessionmaker())
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
+# db = SQLAlchemy(app)
+
+# class users(db.Model):
+#     id = db.Column(db.Integer, primary_key = True)
+#     username = db.Column(db.String(80), unique = True, nullable = False)
+#     hash = db.Column(db.String(120), nullable = False)
+#     receipts = db.Column(db.Integer, nullable = False, default='0')
+
+#     def __repr__(self):
+#         return '<users %r>' % self.username
+
+# class receipts(db.Model):
+#     id = db.Column(db.Integer, primary_key = True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+#     name = db.Column(db.String, nullable = False)
+#     header = db.Column(db.String)
+#     total = db.Column(db.Float, nullable=False, default= '0.00')
+#     date = db.Column(db.DateTime, nullable = False)
+#     date_created = db.Column(db.DateTime, nullable = False)
+#     category = db.Column(db.String, nullable = False)
+#     language = db.Column(db.String, nullable = False)
+#     image_link = db.Column(db.String, nullable = False)
+#     deleted = db.Column(db.Integer, nullable = False)
+
+#     user = db.relationship('users', backref=db.backref('receipt', lazy=True))
+    
+#     def __repr__(self):
+#         return '<receipts %r>' % self.username
+
 
 most_common_passwords = [
     "123456",
@@ -210,8 +246,8 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = :username",
-                          username=request.form.get("username"))
+        rows = db.execute("SELECT * FROM users WHERE username = :username", username=request.form.get("username"))
+        # rows = db.Query.filter_by(username = request.form.get("username"))
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
