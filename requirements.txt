@@ -14,7 +14,7 @@ googletrans==2.4.0
 idna==2.9
 inflection==0.3.1
 itsdangerous==1.1.0
-Jinja2==2.11.1
+Jinja2==2.11.3
 MarkupSafe==1.1.1
 numpy==1.18.2
 opencv-python==4.2.0.32
